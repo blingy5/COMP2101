@@ -76,11 +76,36 @@
 #   External IP     : $myExternalIP
 #   External Name   : $myExternalName
 
+
+#Gathering Data
+myHostName=$(hostname) 
+lanName=$(ip a |awk '/: e/{gsub(/:/,"");print $2}') 
+lanAddress=$(ip a s $lanName |awk '/inet /{gsub(/\/.*/,"");print $2}')
+lanHostName=$(getent hosts lanAddress | awk '{print $2}')
+getIp=$(curl -s icanhazip.com)
+externalName=$(getent hosts $getIp | awk '{print $2}')
+ip=$(ip route show | grep -i 'default via'| awk '{print $3 }')
+
 cat <<EOF
-Hostname        : $(hostname)
-LAN Address     : $(ip a s $(ip a |awk '/: e/{gsub(/:/,"");print $2}')|awk '/inet /{gsub(/\/.*/,"");print $2}')
-LAN Hostname    : $(getent hosts $(ip a s $(ip a |awk '/: e/{gsub(/:/,"");print $2}')|awk '/inet /{gsub(/\/.*/,"");print $2}')| awk '{print $2}')
-External IP     : $(curl -s icanhazip.com)
-External Name   : $(getent hosts $(curl -s icanhazip.com) | awk '{print $2}')
+Hostname        : $myHostName
+LAN Address     : $lanAddress
+LAN Hostname    : $lanHostName
+External IP     : $getIp
+External Name   : $externalName
+Router IP       : $ip 
 EOF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
